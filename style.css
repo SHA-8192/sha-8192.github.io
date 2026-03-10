@@ -1,0 +1,257 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  line-height: 1.7;
+}
+
+header {
+  background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+  border-bottom: 1px solid #30363d;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 3rem;
+  color: #58a6ff;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+header p {
+  font-size: 1.2rem;
+  color: #8b949e;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+nav {
+  background-color: #161b22;
+  border-bottom: 1px solid #30363d;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+nav a {
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+nav a:hover {
+  color: #58a6ff;
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+
+section {
+  margin-bottom: 64px;
+}
+
+section h2 {
+  font-size: 1.75rem;
+  color: #e6edf3;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #30363d;
+}
+
+section p {
+  margin-bottom: 16px;
+  color: #c9d1d9;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.card {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+}
+
+.card .icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.card h3 {
+  font-size: 1rem;
+  color: #e6edf3;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 0.875rem;
+  color: #8b949e;
+  margin: 0;
+}
+
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.spec-table th,
+.spec-table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid #30363d;
+}
+
+.spec-table th {
+  background-color: #161b22;
+  color: #8b949e;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.spec-table td {
+  color: #c9d1d9;
+}
+
+.spec-table tr:last-child td {
+  border-bottom: none;
+}
+
+.hash-output {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 20px;
+}
+
+.hash-output label {
+  display: block;
+  font-size: 0.85rem;
+  color: #8b949e;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hash-output input[type="text"] {
+  width: 100%;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.hash-output input[type="text"]:focus {
+  border-color: #58a6ff;
+}
+
+.hash-output button {
+  background-color: #238636;
+  border: 1px solid #2ea043;
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: background-color 0.2s;
+}
+
+.hash-output button:hover {
+  background-color: #2ea043;
+}
+
+.hash-output .result {
+  margin-top: 20px;
+  display: none;
+}
+
+.hash-output .result label {
+  margin-bottom: 8px;
+}
+
+.hash-output .result code {
+  display: block;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #79c0ff;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  padding: 14px;
+  word-break: break-all;
+}
+
+.use-cases {
+  list-style: none;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.use-cases li {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.use-cases li .icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.use-cases li .text h3 {
+  color: #e6edf3;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.use-cases li .text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #8b949e;
+}
+
+footer {
+  background-color: #161b22;
+  border-top: 1px solid #30363d;
+  text-align: center;
+  padding: 32px 20px;
+  color: #8b949e;
+  font-size: 0.875rem;
+}
