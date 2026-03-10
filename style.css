@@ -55,25 +55,57 @@ main {
   gap: 1.5rem;
 }
 
-/* Avatar with pulsing glow */
-@keyframes avatarPulse {
-  0%, 100% { box-shadow: 0 0 0 3px #0d1117, 0 0 0 5px rgba(31, 111, 235, 0.3); }
-  50%       { box-shadow: 0 0 0 3px #0d1117, 0 0 0 10px rgba(31, 111, 235, 0.55); }
+/* Avatar with spinning gradient ring + glow */
+@keyframes spinRing {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes avatarGlow {
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(88, 166, 255, 0.3), 0 0 32px 4px rgba(139, 92, 246, 0.15); }
+  50%       { box-shadow: 0 0 22px 6px rgba(88, 166, 255, 0.55), 0 0 48px 10px rgba(139, 92, 246, 0.3); }
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  flex-shrink: 0;
+}
+
+/* Spinning gradient ring */
+.avatar-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #58a6ff, #8b5cf6, #ec4899, #58a6ff);
+  animation: spinRing 3s linear infinite;
+  z-index: 0;
+}
+
+/* Mask inner circle */
+.avatar-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: #0d1117;
+  z-index: 1;
 }
 
 .avatar {
-  width: 76px;
-  height: 76px;
+  position: absolute;
+  inset: 4px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1f6feb, #58a6ff);
+  background: linear-gradient(135deg, #1f6feb 0%, #8b5cf6 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.9rem;
   font-weight: 700;
   color: #fff;
-  flex-shrink: 0;
-  animation: avatarPulse 3.5s ease-in-out infinite;
+  z-index: 2;
+  animation: avatarGlow 3s ease-in-out infinite;
   user-select: none;
 }
 
