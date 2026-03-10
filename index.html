@@ -7,13 +7,18 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="bg-grid"></div>
+
   <main>
-    <section class="intro">
-      <h1>Sanjith</h1>
-      <p class="headline"><!-- TODO: your headline, e.g. "Software Engineer" --></p>
+    <section class="intro reveal">
+      <div class="avatar">S</div>
+      <div class="intro-text">
+        <h1>Sanjith</h1>
+        <p class="headline"><!-- TODO: your headline, e.g. "Software Engineer" -->&nbsp;</p>
+      </div>
     </section>
 
-    <section class="about">
+    <section class="about reveal">
       <h2>About</h2>
       <p>
         <!-- TODO: write a short bio about yourself -->
@@ -22,7 +27,7 @@
       </p>
     </section>
 
-    <section class="skills">
+    <section class="skills reveal">
       <h2>Skills</h2>
       <ul>
         <!-- TODO: replace with your actual skills -->
@@ -34,7 +39,7 @@
       </ul>
     </section>
 
-    <section class="links">
+    <section class="links reveal">
       <h2>Links</h2>
       <ul>
         <li><a href="https://github.com/sha-8192" target="_blank" rel="noopener">GitHub</a></li>
@@ -42,5 +47,13 @@
       </ul>
     </section>
   </main>
+
+  <script>
+    // Staggered fade-up reveal on load
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      el.style.animationDelay = `${i * 0.13}s`;
+      el.classList.add('visible');
+    });
+  </script>
 </body>
 </html>
