@@ -3,59 +3,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sanjith</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>About Me</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --accent: #2563eb;
+      --border: #dbe2ea;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 1.15rem;
+      color: var(--accent);
+    }
+
+    p {
+      margin-bottom: 10px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-  <div class="bg-grid"></div>
+  <main class="container">
+    <h1>Hello, I am Sanjith</h1>
+    <p class="subtitle">Student | Developer | Lifelong Learner</p>
 
-  <main>
-    <section class="intro reveal">
-      <div class="avatar-wrapper">
-        <div class="avatar">S</div>
-      </div>
-      <div class="intro-text">
-        <h1>Sanjith</h1>
-        <p class="headline"><!-- TODO: your headline, e.g. "Software Engineer" -->&nbsp;</p>
-      </div>
-    </section>
-
-    <section class="about reveal">
-      <h2>About</h2>
+    <section>
+      <h2>About Me</h2>
       <p>
-        <!-- TODO: write a short bio about yourself -->
-        Lorem ipsum — replace this with a sentence or two about who you are,
-        what you do, and what you care about.
+        I enjoy building simple and useful web projects. I like learning new
+        tools, improving my coding skills, and sharing what I build.
+      </p>
+      <p>
+        Outside coding, I spend time exploring technology trends and working on
+        personal ideas.
       </p>
     </section>
 
-    <section class="skills reveal">
+    <section>
       <h2>Skills</h2>
       <ul>
-        <!-- TODO: replace with your actual skills -->
-        <li>Skill one</li>
-        <li>Skill two</li>
-        <li>Skill three</li>
-        <li>Skill four</li>
-        <li>Skill five</li>
+        <li>HTML, CSS, JavaScript</li>
+        <li>Git and GitHub</li>
+        <li>Basic frontend development</li>
       </ul>
     </section>
 
-    <section class="links reveal">
-      <h2>Links</h2>
-      <ul>
-        <li><a href="https://github.com/sha-8192" target="_blank" rel="noopener">GitHub</a></li>
-        <!-- TODO: add more links, e.g. LinkedIn, email -->
-      </ul>
+    <section>
+      <h2>Contact</h2>
+      <p>
+        GitHub: <a href="https://github.com/sha-8192" target="_blank" rel="noopener">github.com/sha-8192</a>
+      </p>
+      <p>Email: your-email@example.com</p>
     </section>
+
+    <p class="footer">Last updated: March 19, 2026</p>
   </main>
-
-  <script>
-    // Staggered fade-up reveal on load
-    document.querySelectorAll('.reveal').forEach((el, i) => {
-      el.style.animationDelay = `${i * 0.13}s`;
-      el.classList.add('visible');
-    });
-  </script>
 </body>
 </html>
