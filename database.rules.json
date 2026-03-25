@@ -1,0 +1,37 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "visitors": {
+      ".read": true,
+      ".write": false
+    },
+
+    "messages": {
+      ".read": "auth != null",
+      ".write": false,
+
+      "$messageId": {
+        ".write": "auth == null",
+        ".validate": "newData.hasChildren(['name', 'email', 'message', 'timestamp'])",
+
+        "name": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().matches(/^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$/)"
+        },
+        "message": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 2000"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber() && newData.val() <= now"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}
