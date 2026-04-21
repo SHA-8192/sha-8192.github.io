@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deployment Artefacts</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --accent: #2563eb;
+      --border: #dbe2ea;
+      --error: #dc2626;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      margin-top: 20px;
+      margin-bottom: 14px;
+      font-size: 1.15rem;
+      color: var(--accent);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .field-hint {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="url"] {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="url"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    input.invalid {
+      border-color: var(--error);
+    }
+
+    .error-msg {
+      color: var(--error);
+      font-size: 0.85rem;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+
+    button[type="submit"] {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      background: #1d4ed8;
+    }
+
+    /* Artefacts table */
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 8px 10px;
+      background: var(--bg);
+      border-bottom: 2px solid var(--border);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      word-break: break-all;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-msg {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Deployment Artefacts</h1>
+    <p class="subtitle">Register and manage deployment artefacts.</p>
+
+    <section>
+      <h2>Register Artefact</h2>
+      <form id="artefact-form" novalidate>
+
+        <div class="form-group">
+          <label for="name">Name</label>
+          <p class="field-hint">Deployment artefact names must be unique.</p>
+          <input type="text" id="name" name="name" autocomplete="off" />
+          <p class="error-msg" id="name-error"></p>
+        </div>
+
+        <div class="form-group">
+          <label for="uri">URI</label>
+          <input type="url" id="uri" name="uri" autocomplete="off" placeholder="https://example.com/artefact" />
+          <p class="error-msg" id="uri-error"></p>
+        </div>
+
+        <div class="form-group">
+          <label for="checksum">SHA-256 Checksum</label>
+          <p class="field-hint">
+            Checksums must be hex-encoded (64 hexadecimal characters).
+            <a href="https://emn178.github.io/online-tools/sha256_checksum.html" target="_blank" rel="noopener">Make one here.</a>
+          </p>
+          <input type="text" id="checksum" name="checksum" autocomplete="off" placeholder="e.g. a3f1…" maxlength="64" />
+          <p class="error-msg" id="checksum-error"></p>
+        </div>
+
+        <button type="submit">Register</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Registered Artefacts</h2>
+      <div id="artefact-list">
+        <p class="empty-msg" id="empty-msg">No artefacts registered yet.</p>
+        <div class="table-wrapper" id="table-wrapper" hidden>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>URI</th>
+                <th>SHA-256 Checksum</th>
+              </tr>
+            </thead>
+            <tbody id="artefact-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer">
+      <a href="index.html">← Back to About Me</a>
+    </p>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'deployment-artefacts';
+
+    function loadArtefacts() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function saveArtefacts(artefacts) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(artefacts));
+    }
+
+    function renderArtefacts() {
+      const artefacts = loadArtefacts();
+      const tbody = document.getElementById('artefact-tbody');
+      const emptyMsg = document.getElementById('empty-msg');
+      const tableWrapper = document.getElementById('table-wrapper');
+
+      tbody.innerHTML = '';
+
+      if (artefacts.length === 0) {
+        emptyMsg.hidden = false;
+        tableWrapper.hidden = true;
+        return;
+      }
+
+      emptyMsg.hidden = true;
+      tableWrapper.hidden = false;
+
+      artefacts.forEach(({ name, uri, checksum }) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(name)}</td>
+          <td><a href="${escapeHtml(uri)}" target="_blank" rel="noopener">${escapeHtml(uri)}</a></td>
+          <td><code>${escapeHtml(checksum)}</code></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showError(id, message) {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.classList.add('visible');
+      document.getElementById(id.replace('-error', '')).classList.add('invalid');
+    }
+
+    function clearError(id) {
+      const el = document.getElementById(id);
+      el.textContent = '';
+      el.classList.remove('visible');
+      document.getElementById(id.replace('-error', '')).classList.remove('invalid');
+    }
+
+    document.getElementById('artefact-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const uri = document.getElementById('uri').value.trim();
+      const checksum = document.getElementById('checksum').value.trim();
+
+      let valid = true;
+
+      // Clear previous errors
+      clearError('name-error');
+      clearError('uri-error');
+      clearError('checksum-error');
+
+      // Validate name
+      if (!name) {
+        showError('name-error', 'Name is required.');
+        valid = false;
+      } else {
+        const artefacts = loadArtefacts();
+        if (artefacts.some(a => a.name === name)) {
+          showError('name-error', 'An artefact with this name already exists. Names must be unique.');
+          valid = false;
+        }
+      }
+
+      // Validate URI
+      if (!uri) {
+        showError('uri-error', 'URI is required.');
+        valid = false;
+      }
+
+      // Validate checksum: must be exactly 64 hex characters
+      if (!checksum) {
+        showError('checksum-error', 'SHA-256 checksum is required.');
+        valid = false;
+      } else if (!/^[0-9a-fA-F]{64}$/.test(checksum)) {
+        showError('checksum-error', 'Checksum must be hex-encoded (exactly 64 hexadecimal characters).');
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      const artefacts = loadArtefacts();
+      artefacts.push({ name, uri, checksum: checksum.toLowerCase() });
+      saveArtefacts(artefacts);
+
+      this.reset();
+      renderArtefacts();
+    });
+
+    renderArtefacts();
+  </script>
+</body>
+</html>
