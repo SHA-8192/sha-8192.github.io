@@ -83,9 +83,55 @@
       text-shadow: 0 0 18px rgba(22, 76, 75, 0.25);
     }
 
+    .light-box {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      z-index: 3;
+      padding: 18px;
+      min-width: 160px;
+      color: #90efd3;
+      background: rgba(7, 16, 20, 0.72);
+      border: 1px solid rgba(144, 239, 211, 0.45);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .light-bulb {
+      width: 42px;
+      height: 42px;
+      margin-bottom:12px;
+      border-radius: 50%;
+      background: #344348;
+      box-shadow: none;
+      transition: background 220ms ease, box-shadow 220ms ease;
+    }
+
+    .light-bulb.is-on {
+      background: #ffe28a;
+      box-shadow: 0 0 18px #ffe28a,
+                  0 0 48px rgba(255, 226, 138, 0.75);
+    }
+
+    .light-button {
+      padding: 8px 12px;
+      color: inherit;
+      background: transparent;
+      border: 1px solid currentColor;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
+  <section class="light-box" aria-label="Light control">
+    <div class="light-bulb" id="light-bulb"></div>
+    <button class="light-button" id="device-light-toggle" type="button" aria-pressed="false">
+      Turn on
+    </button>
+  </section>
+
   <button id="light-toggle" type="button" aria-pressed="false">
     Light
   </button>
@@ -93,6 +139,18 @@
   <canvas id="field" aria-label="Interactive animated background"></canvas>
   <div class="name-display" id="name-display" aria-label="Sanjith">SANJITH</div>
   <script>
+    const deviceLightToggle = document.querySelector("#device-light-toggle");
+    const lightBulb = document.querySelector("#light-bulb");
+    let deviceLightOn = false;
+
+    deviceLightToggle.addEventListener("click", () => {
+      deviceLightOn = !deviceLightOn;
+
+      lightBulb.classList.toggle("is-on", deviceLightOn);
+      deviceLightToggle.textContent = deviceLightOn ? "Turn off" : "Turn on";
+      deviceLightToggle.setAttribute("aria-pressed", String(deviceLightOn));
+    });
+
     const lightToggle = document.querySelector("#light-toggle")
     let lightMode = false
 
