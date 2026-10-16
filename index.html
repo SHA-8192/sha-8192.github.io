@@ -53,12 +53,53 @@
       color: hsl(var(--hue, 171) 95% 90%);
       text-shadow: 0 0 42px hsl(var(--hue, 171) 80% 55% / 0.9);
     }
+
+    #light-toggle {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 3;
+      padding: 10px 16px;
+      background: transparent;
+      color: #90efd3;
+      cursor: pointer;
+    }
+
+    body.light-mode {
+      cursor: default;
+      color-scheme: light;
+      background: #b9d8d0;
+    }
+
+    body.light-mode #light-toggle {
+      color: #164c4b;
+      border-color: #164c4b;
+    }
+
+    body.light-mode .name-display {
+      color: #164c4b;
+      text-shadow: none;
+    }
+
   </style>
 </head>
 <body>
+  <button id="light-toggle" type="button" aria-pressed="false">
+    Light
+  </button>
+
   <canvas id="field" aria-label="Interactive animated background"></canvas>
   <div class="name-display" id="name-display" aria-label="Sanjith">SANJITH</div>
   <script>
+    const lightToggle = document.querySelector("#light-toggle")
+    let lightMode = false
+
+    lightToggle.addEventListener("click", () => {
+      lightMode = !lightMode;
+      document.body.classList.toggle("light-mode", lightMode);
+      lightToggle.textContent = lightMode ? "Dark" : "Light";
+      lightToggle.setAttribute("aria-pressed", String(lightMode));
+    });
     const canvas = document.querySelector("#field");
     const context = canvas.getContext("2d");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -123,10 +164,26 @@
     function drawBackground() {
       const glowX = pointer.x * width;
       const glowY = pointer.y * height;
-      const gradient = context.createRadialGradient(glowX, glowY, 0, glowX, glowY, Math.max(width, height) * 0.8);
-      gradient.addColorStop(0, "#163b3e");
-      gradient.addColorStop(0.35, "#0d2027");
-      gradient.addColorStop(1, "#050b10");
+
+      const gradient = context.createRadialGradient(
+        glowX,
+        glowY,
+        0,
+        glowX,
+        glowY,
+        Math.max(width, height) * 0.8
+      );
+
+      if (lightMode) {
+        gradient.addColorStop(0, "#f4fffb");
+        gradient.addColorStop(0.35, "#d8f0e8");
+        gradient.addColorStop(1, "#b9d8d0");
+      } else {
+        gradient.addColorStop(0, "#163b3e");
+        gradient.addColorStop(0.35, "#0d2027");
+        gradient.addColorStop(1, "#050b10");
+      }
+
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
 
