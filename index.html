@@ -30,21 +30,55 @@
       height: 100%;
       touch-action: none;
     }
+
+    .name-display {
+      position: fixed;
+      top: 28px;
+      left: 50%;
+      z-index: 2;
+      margin: 0;
+      color: hsl(var(--hue, 171) 90% 82%);
+      font: 800 clamp(2rem, 8vw, 4rem)/0.9 sans-serif;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-shadow: 0 0 24px hsl(var(--hue, 171) 85% 62% / 0.55);
+      user-select: none;
+      pointer-events: none;
+      transform: translateX(-50%) rotate(var(--tilt, 0deg)) scale(var(--scale, 1));
+      transition: transform 220ms ease, color 220ms ease, text-shadow 220ms ease;
+    }
+
+    .name-display.is-pulsing {
+      --scale: 1.08;
+      color: hsl(var(--hue, 171) 95% 90%);
+      text-shadow: 0 0 42px hsl(var(--hue, 171) 80% 55% / 0.9);
+    }
   </style>
 </head>
 <body>
   <canvas id="field" aria-label="Interactive animated background"></canvas>
+  <div class="name-display" id="name-display" aria-label="Sanjith">SANJITH</div>
   <script>
     const canvas = document.querySelector("#field");
     const context = canvas.getContext("2d");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const pointer = { x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, active: false };
+    const nameDisplay = document.querySelector("#name-display");
     const particles = [];
     const ripples = [];
     let width = 0;
     let height = 0;
     let density = 0;
     let time = 0;
+
+    function animateName() {
+      nameDisplay.style.setProperty("--hue", Math.floor(Math.random() * 360));
+      nameDisplay.style.setProperty("--tilt", `${Math.round(Math.random() * 12 - 6)}deg`);
+      nameDisplay.classList.remove("is-pulsing");
+      void nameDisplay.offsetWidth;
+      nameDisplay.classList.add("is-pulsing");
+      window.setTimeout(() => nameDisplay.classList.remove("is-pulsing"), 320);
+    }
 
     function resize() {
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -83,6 +117,7 @@
         radius: 0,
         opacity: 0.6
       });
+      animateName();
     }
 
     function drawBackground() {
