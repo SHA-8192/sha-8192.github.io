@@ -122,8 +122,7 @@
     .quick-nav a,
     .theme-switcher button,
     .chip,
-    .hero-actions a,
-    .contact-cta {
+    .hero-actions a {
       border-radius: 999px;
       border: 1px solid var(--border);
       color: var(--text);
@@ -146,9 +145,7 @@
     .chip:hover,
     .chip:focus-visible,
     .hero-actions a:hover,
-    .hero-actions a:focus-visible,
-    .contact-cta:hover,
-    .contact-cta:focus-visible {
+    .hero-actions a:focus-visible {
       transform: translateY(-2px);
       border-color: var(--accent);
     }
@@ -259,8 +256,7 @@
       font-weight: 500;
     }
 
-    .hero-actions .primary,
-    .contact-cta {
+    .hero-actions .primary {
       background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 90%, white), color-mix(in srgb, var(--accent-2) 35%, white));
       border-color: transparent;
       color: white;
@@ -334,8 +330,7 @@
       grid-column: span 5;
     }
 
-    .projects,
-    .contact {
+    .projects {
       grid-column: 1 / -1;
     }
 
@@ -453,39 +448,6 @@
       background: color-mix(in srgb, var(--accent-2) 14%, white);
     }
 
-    .contact-wrap {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    .contact p {
-      color: var(--muted);
-      margin-bottom: 0.55rem;
-    }
-
-    .contact-links {
-      display: flex;
-      gap: 0.7rem;
-      flex-wrap: wrap;
-    }
-
-    .contact-links a {
-      color: var(--text);
-      text-decoration-color: color-mix(in srgb, var(--accent) 60%, transparent);
-      text-underline-offset: 3px;
-    }
-
-    .contact-cta {
-      text-decoration: none;
-      padding: 0.7rem 1rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     footer {
       margin-top: 1rem;
       text-align: center;
@@ -541,14 +503,6 @@
         justify-content: center;
       }
 
-      .contact-wrap {
-        grid-template-columns: 1fr;
-      }
-
-      .contact-cta {
-        width: 100%;
-      }
-    }
 
     @media (prefers-reduced-motion: reduce) {
       * {
@@ -568,7 +522,6 @@
         <a href="#about">About</a>
         <a href="#skills">Skills</a>
         <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
       </nav>
       <div class="theme-switcher" aria-label="Theme switcher">
         <button type="button" data-theme="sun" style="--preview: linear-gradient(135deg, #ffc979, #d64e1f);" aria-label="Sun theme"></button>
@@ -581,7 +534,7 @@
       <div>
         <p class="eyebrow">Personal Showcase</p>
         <h1>Building practical web experiences with style and intent.</h1>
-        <p class="rotator">I am <span id="roleText">Developer</span></p>
+        <p class="rotator">I am a <span id="roleText">Developer</span></p>
         <p class="hero-copy">
           I am Sanjith. I enjoy creating useful, polished interfaces and turning
           ideas into fast, interactive products with HTML, CSS, and JavaScript.
@@ -684,19 +637,6 @@
         </div>
       </section>
 
-      <section id="contact" class="contact reveal">
-        <h2>Contact</h2>
-        <div class="contact-wrap">
-          <div>
-            <p>Want to collaborate, share ideas, or just say hello?</p>
-            <div class="contact-links">
-              <a href="https://github.com/sha-8192" target="_blank" rel="noopener">github.com/sha-8192</a>
-              <a href="mailto:your-email@example.com">your-email@example.com</a>
-            </div>
-          </div>
-          <a class="contact-cta" href="mailto:your-email@example.com">Send Email</a>
-        </div>
-      </section>
     </main>
 
     <footer>
