@@ -62,6 +62,8 @@
       padding: 10px 16px;
       background: transparent;
       color: #90efd3;
+      border: 1px solid #90efd3;
+      border-radius: 999px;
       cursor: pointer;
     }
 
@@ -78,7 +80,7 @@
 
     body.light-mode .name-display {
       color: #164c4b;
-      text-shadow: none;
+      text-shadow: 0 0 18px rgba(22, 76, 75, 0.25);
     }
 
   </style>
@@ -175,28 +177,34 @@
       );
 
       if (lightMode) {
-        gradient.addColorStop(0, "#f4fffb");
-        gradient.addColorStop(0.35, "#d8f0e8");
-        gradient.addColorStop(1, "#b9d8d0");
+        gradient.addColorStop(0, "rgba(20, 110, 100, 0.08)");
+        gradient.addColorStop(0.35, "transparent");
+        gradient.addColorStop(1, "rgba(220, 130, 60, 0.08)");
       } else {
-        gradient.addColorStop(0, "#163b3e");
-        gradient.addColorStop(0.35, "#0d2027");
-        gradient.addColorStop(1, "#050b10");
+        gradient.addColorStop(0, `hsla(${170 + Math.sin(time * 0.0002) * 20}, 70%, 45%, 0.13)`);
+        gradient.addColorStop(0.35, "transparent");
+        gradient.addColorStop(1, `hsla(${28 + Math.sin(time * 0.00016) * 18}, 85%, 52%, 0.1)`);
       }
 
       context.fillStyle = gradient;
       context.fillRect(0, 0, width, height);
 
       const wash = context.createLinearGradient(0, 0, width, height);
-      wash.addColorStop(0, `hsla(${170 + Math.sin(time * 0.0002) * 20}, 70%, 45%, 0.13)`);
-      wash.addColorStop(0.5, "transparent");
-      wash.addColorStop(1, `hsla(${28 + Math.sin(time * 0.00016) * 18}, 85%, 52%, 0.1)`);
+      if (lightMode) {
+        wash.addColorStop(0, "rgba(20, 110, 100, 0.08)");
+        wash.addColorStop(0.5, "transparent");
+        wash.addColorStop(1, "rgba(220, 130, 60, 0.08)");
+      } else {
+        wash.addColorStop(0, `hsla(${170 + Math.sin(time * 0.0002) * 20}, 70%, 45%, 0.13)`);
+        wash.addColorStop(0.5, "transparent");
+        wash.addColorStop(1, `hsla(${28 + Math.sin(time * 0.00016) * 18}, 85%, 52%, 0.1)`);
+      }
       context.fillStyle = wash;
       context.fillRect(0, 0, width, height);
     }
 
     function drawParticles() {
-      context.globalCompositeOperation = "lighter";
+      context.globalCompositeOperation = lightMode ? "source-over" : "lighter";
       particles.forEach((particle, index) => {
         if (!reducedMotion.matches) {
           particle.x -= particle.speed;
@@ -212,10 +220,13 @@
         const distance = Math.hypot(distanceX, distanceY);
         const influence = pointer.active ? Math.max(0, 1 - distance / 260) : 0;
         const size = particle.radius + influence * 2.5;
-        const alpha = 0.18 + influence * 0.55;
+        const alpha = lightMode
+          ? 0.12 + influence * 0.35
+          : 0.18 + influence * 0.55;
+        const lightness = lightMode ? 42 : 72;
         context.beginPath();
         context.arc(particle.x - distanceX * influence * 0.08, particle.y - distanceY * influence * 0.08, size, 0, Math.PI * 2);
-        context.fillStyle = `hsla(${particle.hue + Math.sin(index + time * 0.0004) * 10}, 88%, 72%, ${alpha})`;
+        context.fillStyle = `hsla(${particle.hue}, 78%, ${lightness}%, ${alpha})`;
         context.fill();
       });
       context.globalCompositeOperation = "source-over";
@@ -227,7 +238,9 @@
         ripple.opacity *= 0.965;
         context.beginPath();
         context.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-        context.strokeStyle = `rgba(144, 239, 211, ${ripple.opacity})`;
+        context.strokeStyle = lightMode
+          ? `rgba(22, 100, 95, ${ripple.opacity})`
+          : `rgba(144, 239, 211, ${ripple.opacity})`;
         context.lineWidth = 1.5;
         context.stroke();
       });
