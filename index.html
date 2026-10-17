@@ -138,6 +138,74 @@
       cursor: pointer;
     }
 
+    .tab-bar {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 5;
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-button {
+      padding: 8px 12px;
+      color: #90efd3;
+      background: rgba(7, 16, 20, 0.72);
+      border: 1px solid #90efd3;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .tab-buton.is-active {
+      color: #071014;
+      background: #90efd3;
+    }
+
+    .game-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 4;
+      width: min(90vw, 360px);
+      padding: 24px;
+      color: #90efd3;
+      background: rgba(7, 16, 20, 0.86);
+      border: 1px solid rgba(144, 239, 211, 0.45);
+      border-radius: 12px;
+      transform: translate(-50%, -50%);
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 20px 0;
+    }
+
+    .game-cell {
+      aspect-ratio: 1;
+      color: #90efd3;
+      font-size: 2.5rem;
+      background: rgba(144, 239, 211, 0.08);
+      border: 1px solid rgba(144, 239, 211, 0.45);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .game-cell:disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
+
+    #game-reset {
+      padding: 8px 12px;
+      color: inherit;
+      background: transparent;
+      border: 1px solid currentColor;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
@@ -169,9 +237,163 @@
     Light
   </button>
 
+  <nav class="tab-bar" aria-label="Views">
+    <button class="tab-button is-active" id="field-tab" type="button">
+      Field
+    </button>
+    <button class="tab-button is-active" id="game-tab" type="button">
+      Tic Tac Toe
+    </button>
+  </nav>
+
+  <section class="game-panel" id="game-panel" hidden>
+    <h2>Tic-Tac-Toe</h2>
+    <p id="game-status">Your turn. You are O.</p>
+
+    <div class="game-board" id="game-board">
+      <button class="game-cell" type="button" data-index="0"></button>
+      <button class="game-cell" type="button" data-index="1"></button>
+      <button class="game-cell" type="button" data-index="2"></button>
+      <button class="game-cell" type="button" data-index="3"></button>
+      <button class="game-cell" type="button" data-index="4"></button>
+      <button class="game-cell" type="button" data-index="5"></button>
+      <button class="game-cell" type="button" data-index="6"></button>
+      <button class="game-cell" type="button" data-index="7"></button>
+      <button class="game-cell" type="button" data-index="8"></button>
+    </div>
+
+    <button id="game-reset" type="button">New game</button>
+  </section>
+
   <canvas id="field" aria-label="Interactive animated background"></canvas>
   <div class="name-display" id="name-display" aria-label="Sanjith">SANJITH</div>
   <script>
+        const fieldTab = document.querySelector("#field-tab");
+    const gameTab = document.querySelector("#game-tab");
+    const gamePanel = document.querySelector("#game-panel");
+    const gameStatus = document.querySelector("#game-status");
+    const gameCells = [...document.querySelectorAll(".game-cell")];
+    const gameReset = document.querySelector("#game-reset");
+
+    let gameBoard = Array(9).fill("");
+    let gameOver = false;
+
+    const winningLines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    function getWinner(board) {
+      for (const [first, second, third] of winningLines) {
+        if (
+          board[first] &&
+          board[first] === board[second] &&
+          board[first] === board[third]
+        ) {
+          return board[first];
+        }
+      }
+
+      return board.every(Boolean) ? "draw" : null;
+    }
+
+    function renderGame() {
+      gameCells.forEach((cell, index) => {
+        cell.textContent = gameBoard[index];
+        cell.disabled = Boolean(gameBoard[index]) || gameOver;
+      });
+    }
+
+    function finishGame(result) {
+      gameOver = true;
+
+      if (result === "draw") {
+        gameStatus.textContent = "Draw.";
+      } else {
+        gameStatus.textContent = result === "O"
+          ? "You win!"
+          : "The bot wins.";
+      }
+
+      renderGame();
+    }
+
+    function getBotMove() {
+      const emptyCells = gameBoard
+        .map((value, index) => value ? null : index)
+        .filter((index) => index !== null);
+
+      return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    }
+
+    function botTurn() {
+      const move = getBotMove();
+
+      if (move === undefined) return;
+
+      gameBoard[move] = "X";
+      const result = getWinner(gameBoard);
+
+      if (result) {
+        finishGame(result);
+      } else {
+        gameStatus.textContent = "Your turn. You are O.";
+        renderGame();
+      }
+    }
+
+    function playerTurn(event) {
+      const index = Number(event.currentTarget.dataset.index);
+
+      if (gameBoard[index] || gameOver) return;
+
+      gameBoard[index] = "O";
+
+      const result = getWinner(gameBoard);
+
+      if (result) {
+        finishGame(result);
+        return;
+      }
+
+      gameStatus.textContent = "Bot is thinking...";
+      renderGame();
+      window.setTimeout(botTurn, 350);
+    }
+
+    function resetGame() {
+      gameBoard = Array(9).fill("");
+      gameOver = false;
+      gameStatus.textContent = "Your turn. You are O.";
+      renderGame();
+    }
+
+    gameCells.forEach((cell) => {
+      cell.addEventListener("click", playerTurn);
+    });
+
+    gameReset.addEventListener("click", resetGame);
+
+    gameTab.addEventListener("click", () => {
+      gamePanel.hidden = false;
+      fieldTab.classList.remove("is-active");
+      gameTab.classList.add("is-active");
+    });
+
+    fieldTab.addEventListener("click", () => {
+      gamePanel.hidden = true;
+      gameTab.classList.remove("is-active");
+      fieldTab.classList.add("is-active");
+    });
+
+    renderGame();
+    
     const deviceLightToggle = document.querySelector("#device-light-toggle");
     const lightBulb = document.querySelector("#light-bulb");
     let deviceLightOn = false;
