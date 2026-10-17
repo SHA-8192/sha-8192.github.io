@@ -188,7 +188,7 @@
       canvas.width = width * pixelRatio;
       canvas.height = height * pixelRatio;
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-      density = Math.min(190, Math.max(70, Math.floor(width * height / 10500)));
+      density = Math.min(110, Math.max(40, Math.floor(width * height / 18000)));
       particles.length = 0;
       for (let index = 0; index < density; index += 1) createParticle(true);
     }
@@ -222,6 +222,10 @@
     }
 
     function drawBackground() {
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = lightMode ? "#b9d8d0" : "#071014";
+      context.fillRect(0, 0, width, height);
+
       const glowX = pointer.x * width;
       const glowY = pointer.y * height;
 
@@ -262,7 +266,7 @@
     }
 
     function drawParticles() {
-      context.globalCompositeOperation = lightMode ? "source-over" : "lighter";
+      context.globalCompositeOperation = "source-over";
       particles.forEach((particle, index) => {
         if (!reducedMotion.matches) {
           particle.x -= particle.speed;
@@ -276,11 +280,11 @@
         const distanceX = particle.x - pointer.x * width;
         const distanceY = particle.y - pointer.y * height;
         const distance = Math.hypot(distanceX, distanceY);
-        const influence = pointer.active ? Math.max(0, 1 - distance / 260) : 0;
-        const size = particle.radius + influence * 2.5;
+        const influence = pointer.active ? Math.max(0, 1 - distance / 360) : 0;
+        const size = particle.radius + influence * 0.8;
         const alpha = lightMode
-          ? 0.12 + influence * 0.35
-          : 0.18 + influence * 0.55;
+          ? 0.06 + influence * 0.12
+          : 0.08 + influence * 0.18;
         const lightness = lightMode ? 42 : 72;
         context.beginPath();
         context.arc(particle.x - distanceX * influence * 0.08, particle.y - distanceY * influence * 0.08, size, 0, Math.PI * 2);
