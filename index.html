@@ -122,9 +122,42 @@
       cursor: pointer;
     }
 
+    .rgb-box {
+      top: 180px;
+    }
+
+    #rgb-light-color {
+      display: block;
+      width: 48px;
+      height: 32px;
+      margin-bottom: 12px;
+      padding: 2px;
+      background: transparent;
+      border: 1px solid currentColor;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
+
+  <section class="light-box rgb-box" aria-label="RGB light control">
+    <div class="light-bulb" id="rgb-light-bulb"></div>
+    
+    <input
+      id="rgb-light-color"
+      type="color"
+      value="#ff3b81"
+      aria-label="RGB light color"
+    />
+
+    <button class="light-button" id="rgb-light-toggle" type="button" aria-pressed="false">
+      Turn on
+    </button>
+
+  </section>
+
   <section class="light-box" aria-label="Light control">
     <div class="light-bulb" id="light-bulb"></div>
     <button class="light-button" id="device-light-toggle" type="button" aria-pressed="false">
@@ -150,6 +183,37 @@
       deviceLightToggle.textContent = deviceLightOn ? "Turn off" : "Turn on";
       deviceLightToggle.setAttribute("aria-pressed", String(deviceLightOn));
     });
+
+    const rgbLightToggle = document.querySelector("#rgb-light-toggle");
+    const rgbLightBulb = document.querySelector("#rgb-light-bulb");
+    const rgbLightColor = document.querySelector("#rgb-light-color");
+
+    let rgbLightOn = false;
+
+    function updateRgbLight() {
+      if (!rgbLightOn) {
+      rgbLightBulb.style.background = "#344348";
+      rgbLightBulb.style.boxShadow = "none";
+      return;
+    }
+
+    const color = rgbLightColor.value;
+
+    rgbLightBulb.style.background = color;
+    rgbLightBulb.style.boxShadow = `
+      0 0 18px ${color},
+      0 0 48px ${color}
+    `;
+  }
+
+rgbLightToggle.addEventListener("click", () => {
+  rgbLightOn = !rgbLightOn;
+  rgbLightToggle.textContent = rgbLightOn ? "Turn off" : "Turn on";
+  rgbLightToggle.setAttribute("aria-pressed", String(rgbLightOn));
+  updateRgbLight();
+});
+
+rgbLightColor.addEventListener("input", updateRgbLight);
 
     const lightToggle = document.querySelector("#light-toggle")
     let lightMode = false
