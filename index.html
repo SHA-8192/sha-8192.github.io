@@ -48,6 +48,22 @@
       transition: transform 220ms ease, color 220ms ease, text-shadow 220ms ease;
     }
 
+    .text-box {
+      position: fixed;
+      top: 130px;
+      left: 50%;
+      z-index: 3;
+      width: min(80vw, 320px);
+      padding: 10px 12px;
+      color: #90efd3;
+      background: rgba(7, 16, 20, 0.72);
+      border: 1px solid rgba(144, 239, 211, 0.45);
+      border-radius: 6px;
+      font: inherit;
+      text-align: center;
+      transform: translateX(-50%);
+    }
+
     .name-display.is-pulsing {
       --scale: 1.08;
       color: hsl(var(--hue, 171) 95% 90%);
@@ -156,7 +172,7 @@
       cursor: pointer;
     }
 
-    .tab-buton.is-active {
+    .tab-button.is-active {
       color: #071014;
       background: #90efd3;
     }
@@ -166,7 +182,7 @@
       top: 50%;
       left: 50%;
       z-index: 4;
-      width: min(90vw, 360px);
+      width: min(90vw, 520px);
       padding: 24px;
       color: #90efd3;
       background: rgba(7, 16, 20, 0.86);
@@ -206,9 +222,64 @@
       cursor: pointer;
     }
 
+    .checkers-board {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      width: min(90vw, 480px);
+      aspect-ratio: 1;
+    }
+
+    .checker-cell {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+    }
+
+    .checker-cell.dark {
+      background: #6b4435;
+      cursor: pointer;
+    }
+
+    .checker-cell.light {
+      background: #e7c9a9;
+      cursor: default;
+    }
+
+    .checker-cell.selected {
+      box-shadow: inset 0 0 0 4px #ffe28a;
+    }
+
+    .checker-cell.legal {
+      box-shadow: inset 0 0 0 4px #90efd3;
+    }
+
+    .checker-piece {
+      width: 70%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+    }
+
+    .checker-piece.red {
+      background: #d94b4b;
+    }
+
+    .checker-piece.black {
+      background: #202020;
+    }
+
+    .checker-piece.king {
+      box-shadow: inset 0 0 0 4px #ffe28a;
+    }
+
   </style>
 </head>
 <body>
+  <section class="game-panel" id="checkers-panel" hidden>
+    <h2>Checkers</h2>
+    <div class="checkers-board" id="checkers-board"></div>
+    <p id="checkers-status">Your turn.</p>
+    <button class="light-button" id="checkers-reset" type="button">New game</button>
+  </section>
 
   <section class="light-box rgb-box" aria-label="RGB light control">
     <div class="light-bulb" id="rgb-light-bulb"></div>
@@ -244,6 +315,9 @@
     <button class="tab-button is-active" id="game-tab" type="button">
       Tic Tac Toe
     </button>
+    <button class="tab-button" id="checkers-tab" type="button">
+      Checkers
+    </button>
   </nav>
 
   <section class="game-panel" id="game-panel" hidden>
@@ -266,11 +340,233 @@
   </section>
 
   <canvas id="field" aria-label="Interactive animated background"></canvas>
+  <input class="text-box" id="text-box" type="text" placeholder="Type something..." aria-label="Text to display" />
   <div class="name-display" id="name-display" aria-label="Sanjith">SANJITH</div>
   <script>
-        const fieldTab = document.querySelector("#field-tab");
+    const checkersBoard = document.querySelector("#checkers-board");
+    const checkersStatus = document.querySelector("#checkers-status");
+    const checkersReset = document.querySelector("#checkers-reset");
+    const checkerCells = [];
+    let checkerPieces = [];
+    let selectedChecker = null;
+    let checkersTurn = "red";
+    let checkersGameOver = false;
+
+    for (let row = 0; row < 8; row += 1) {
+      for (let column = 0; column < 8; column += 1) {
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = `checker-cell ${
+          (row + column) % 2 ? "dark" : "light"
+        }`;
+        cell.dataset.row = row;
+        cell.dataset.column = column;
+        cell.addEventListener("click", handleCheckerCellClick);
+        checkersBoard.appendChild(cell);
+        checkerCells.push(cell);
+      }
+    }
+
+    function getChecker(row, column) {
+      return checkerPieces.find((piece) => piece.row === row && piece.column === column);
+    }
+
+    function getDirections(piece) {
+      if (piece.king) return [-1, 1];
+      return piece.color === "red" ? [-1] : [1];
+    }
+
+    function getMovesForPiece(piece, capturesOnly = false) {
+      const moves = [];
+
+      getDirections(piece).forEach((rowDirection) => {
+        [-1, 1].forEach((columnDirection) => {
+          const nextRow = piece.row + rowDirection;
+          const nextColumn = piece.column + columnDirection;
+          const nextPiece = getChecker(nextRow, nextColumn);
+
+          if (!nextPiece && !capturesOnly) {
+            moves.push({ row: nextRow, column: nextColumn });
+          }
+
+          if (nextPiece && nextPiece.color !== piece.color) {
+            const landingRow = nextRow + rowDirection;
+            const landingColumn = nextColumn + columnDirection;
+
+            if (
+              landingRow >= 0 && landingRow < 8 &&
+              landingColumn >= 0 && landingColumn < 8 &&
+              !getChecker(landingRow, landingColumn)
+            ) {
+              moves.push({
+                row: landingRow,
+                column: landingColumn,
+                captured: nextPiece
+              });
+            }
+          }
+        });
+      });
+
+      return moves.filter((move) =>
+        move.row >= 0 && move.row < 8 && move.column >= 0 && move.column < 8
+      );
+    }
+
+    function getAvailableMoves(color) {
+      const pieces = checkerPieces.filter((piece) => piece.color === color);
+      const captures = pieces.flatMap((piece) =>
+        getMovesForPiece(piece, true).map((move) => ({ piece, move }))
+      );
+
+      if (captures.length) return captures;
+
+      return pieces.flatMap((piece) =>
+        getMovesForPiece(piece).map((move) => ({ piece, move }))
+      );
+    }
+
+    function renderCheckers() {
+      checkerCells.forEach((cell) => {
+        const row = Number(cell.dataset.row);
+        const column = Number(cell.dataset.column);
+        const piece = getChecker(row, column);
+        const isSelected = selectedChecker === piece;
+        const isLegal = selectedChecker && getMovesForPiece(selectedChecker)
+          .some((move) => move.row === row && move.column === column);
+
+        cell.classList.toggle("selected", isSelected);
+        cell.classList.toggle("legal", Boolean(isLegal));
+        cell.replaceChildren();
+
+        if (piece) {
+          const pieceElement = document.createElement("span");
+          pieceElement.className = `checker-piece ${piece.color}${piece.king ? " king" : ""}`;
+          pieceElement.setAttribute("aria-label", `${piece.color}${piece.king ? " king" : " piece"}`);
+          cell.appendChild(pieceElement);
+        }
+      });
+    }
+
+    function createCheckerPieces() {
+      checkerPieces = [];
+
+      for (let row = 0; row < 3; row += 1) {
+        for (let column = 0; column < 8; column += 1) {
+          if ((row + column) % 2) checkerPieces.push({ row, column, color: "black", king: false });
+        }
+      }
+
+      for (let row = 5; row < 8; row += 1) {
+        for (let column = 0; column < 8; column += 1) {
+          if ((row + column) % 2) checkerPieces.push({ row, column, color: "red", king: false });
+        }
+      }
+    }
+
+    function moveChecker(piece, move) {
+      piece.row = move.row;
+      piece.column = move.column;
+
+      if (move.captured) {
+        checkerPieces = checkerPieces.filter((candidate) => candidate !== move.captured);
+      }
+
+      if ((piece.color === "red" && piece.row === 0) ||
+          (piece.color === "black" && piece.row === 7)) {
+        piece.king = true;
+      }
+    }
+
+    function finishCheckersTurn() {
+      const opponent = checkersTurn === "red" ? "black" : "red";
+      const opponentMoves = getAvailableMoves(opponent);
+
+      if (!checkerPieces.some((piece) => piece.color === opponent) || !opponentMoves.length) {
+        checkersGameOver = true;
+        checkersStatus.textContent = checkersTurn === "red" ? "You win!" : "The computer wins.";
+        renderCheckers();
+        return;
+      }
+
+      checkersTurn = opponent;
+      selectedChecker = null;
+      checkersStatus.textContent = checkersTurn === "red" ? "Your turn." : "Computer is thinking...";
+      renderCheckers();
+
+      if (checkersTurn === "black") window.setTimeout(computerCheckerTurn, 450);
+    }
+
+    function handleCheckerCellClick(event) {
+      if (checkersGameOver || checkersTurn !== "red") return;
+
+      const row = Number(event.currentTarget.dataset.row);
+      const column = Number(event.currentTarget.dataset.column);
+      const clickedPiece = getChecker(row, column);
+
+      if (clickedPiece?.color === "red") {
+        selectedChecker = clickedPiece;
+        renderCheckers();
+        return;
+      }
+
+      if (!selectedChecker) return;
+
+      const move = getAvailableMoves("red").find(({ piece, move: candidate }) =>
+        piece === selectedChecker && candidate.row === row && candidate.column === column
+      );
+
+      if (!move) return;
+
+      moveChecker(selectedChecker, move.move);
+
+      if (move.move.captured && getMovesForPiece(selectedChecker, true).length) {
+        checkersStatus.textContent = "Jump again.";
+        renderCheckers();
+        return;
+      }
+
+      finishCheckersTurn();
+    }
+
+    function computerCheckerTurn(piece = null) {
+      if (checkersGameOver) return;
+
+      const moves = piece
+        ? getMovesForPiece(piece, true).map((move) => ({ piece, move }))
+        : getAvailableMoves("black");
+      const choice = moves[Math.floor(Math.random() * moves.length)];
+
+      if (!choice) return;
+
+      moveChecker(choice.piece, choice.move);
+
+      if (choice.move.captured && getMovesForPiece(choice.piece, true).length) {
+        renderCheckers();
+        window.setTimeout(() => computerCheckerTurn(choice.piece), 450);
+        return;
+      }
+
+      finishCheckersTurn();
+    }
+
+    function resetCheckers() {
+      createCheckerPieces();
+      selectedChecker = null;
+      checkersTurn = "red";
+      checkersGameOver = false;
+      checkersStatus.textContent = "Your turn.";
+      renderCheckers();
+    }
+
+    checkersReset.addEventListener("click", resetCheckers);
+    resetCheckers();
+
+    const fieldTab = document.querySelector("#field-tab");
     const gameTab = document.querySelector("#game-tab");
+    const checkersTab = document.querySelector("#checkers-tab");
     const gamePanel = document.querySelector("#game-panel");
+    const checkersPanel = document.querySelector("#checkers-panel");
     const gameStatus = document.querySelector("#game-status");
     const gameCells = [...document.querySelectorAll(".game-cell")];
     const gameReset = document.querySelector("#game-reset");
@@ -382,13 +678,25 @@
 
     gameTab.addEventListener("click", () => {
       gamePanel.hidden = false;
+      checkersPanel.hidden = true;
       fieldTab.classList.remove("is-active");
+      checkersTab.classList.remove("is-active");
       gameTab.classList.add("is-active");
+    });
+
+    checkersTab.addEventListener("click", () => {
+      gamePanel.hidden = true;
+      checkersPanel.hidden = false;
+      fieldTab.classList.remove("is-active");
+      gameTab.classList.remove("is-active");
+      checkersTab.classList.add("is-active");
     });
 
     fieldTab.addEventListener("click", () => {
       gamePanel.hidden = true;
+      checkersPanel.hidden = true;
       gameTab.classList.remove("is-active");
+      checkersTab.classList.remove("is-active");
       fieldTab.classList.add("is-active");
     });
 
@@ -451,12 +759,17 @@ rgbLightColor.addEventListener("input", updateRgbLight);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const pointer = { x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, active: false };
     const nameDisplay = document.querySelector("#name-display");
+    const textBox = document.querySelector("#text-box");
     const particles = [];
     const ripples = [];
     let width = 0;
     let height = 0;
     let density = 0;
     let time = 0;
+
+    textBox.addEventListener("input", () => {
+      nameDisplay.textContent = textBox.value || "SANJITH";
+    });
 
     function animateName() {
       nameDisplay.style.setProperty("--hue", Math.floor(Math.random() * 360));
