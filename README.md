@@ -1,0 +1,1 @@
+this is a simple personal website that i made to try out some html
